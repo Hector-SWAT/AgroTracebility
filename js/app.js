@@ -2,7 +2,7 @@
 // INICIALIZACIÓN DE LA APLICACIÓN
 // ============================================
 
-// Función global para alertas (debe estar AL INICIO)
+// Función global para alertas (DEBE ESTAR AL INICIO)
 window.showAlert = function(message, type = 'info') {
     // Eliminar alertas existentes
     document.querySelectorAll('.alert').forEach(alert => alert.remove());
@@ -22,28 +22,6 @@ window.showAlert = function(message, type = 'info') {
         <span>${message}</span>
     `;
     
-    // Estilos para la alerta
-    alertDiv.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 1rem 1.5rem;
-        border-radius: 6px;
-        background: white;
-        box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-        z-index: 10000;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        min-width: 300px;
-        max-width: 400px;
-        animation: slideInRight 0.3s ease;
-        border-left: 4px solid ${type === 'success' ? '#28A745' : type === 'warning' ? '#FFC107' : type === 'danger' ? '#DC3545' : '#17A2B8'};
-        color: ${type === 'success' ? '#155724' : type === 'warning' ? '#856404' : type === 'danger' ? '#721c24' : '#0c5460'};
-    `;
-    
-    document.body.appendChild(alertDiv);
-    
     // Auto-eliminar después de 5 segundos
     setTimeout(() => {
         if (alertDiv.parentNode) {
@@ -56,60 +34,39 @@ window.showAlert = function(message, type = 'info') {
             }, 300);
         }
     }, 5000);
+    
+    document.body.appendChild(alertDiv);
 };
 
-// Asegurar que las animaciones CSS estén definidas
-const alertStyle = document.createElement('style');
-alertStyle.textContent = `
-    @keyframes slideInRight {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-`;
-document.head.appendChild(alertStyle);
+// Función para cerrar modal
+window.closeModal = function() {
+    const modal = document.getElementById('successModal');
+    if (modal) modal.style.display = 'none';
+};
 
 document.addEventListener('DOMContentLoaded', function() {
     initApplication();
 });
 
 async function initApplication() {
-    console.log('🌱 Iniciando AgroTracebility v2.0...');
+    console.log('🌱 Iniciando AgroTracebility...');
     
     try {
-        // 1. Inicializar gestor de autocompletado
-        if (typeof AutoCompleteManager !== 'undefined') {
-            window.autoCompleteManager = new AutoCompleteManager();
-            console.log('✅ AutoCompleteManager inicializado');
-        } else {
-            console.warn('⚠️ AutoCompleteManager no está disponible');
-        }
-        
-        // 2. Configurar fecha y hora
+        // 1. Configurar fecha y hora
         updateDateTime();
-        setInterval(updateDateTime, 60000); // Actualizar cada minuto
+        setInterval(updateDateTime, 60000);
         
-        // 3. Cargar datos iniciales
+        // 2. Cargar datos iniciales
         loadInitialData();
         
-        // 4. Configurar eventos
+        // 3. Configurar eventos
         setupEventListeners();
         
-        // 5. Inicializar componentes
+        // 4. Inicializar componentes
         initComponents();
         
-        // 6. Cargar estadísticas
-        updateStatistics();
-        
-        // 7. Configurar validaciones en tiempo real
-        setupRealTimeValidation();
-        
         console.log('✅ AgroTracebility inicializado correctamente');
+        showAlert('Sistema listo para usar', 'success');
         
     } catch (error) {
         console.error('❌ Error al inicializar:', error);
@@ -138,22 +95,35 @@ function updateDateTime() {
 }
 
 function loadInitialData() {
+    console.log('📊 Cargando datos iniciales...');
+    
     // Configurar autocompletado para plaguicidas
     setupPesticideAutocomplete();
     
     // Configurar autocompletado para cultivos
     setupCropAutocomplete();
+    
+    // Configurar valores por defecto
+    setDefaultValues();
 }
 
 function initComponents() {
+    console.log('⚙️ Inicializando componentes...');
+    
     // Inicializar tooltips
     initTooltips();
     
     // Inicializar validaciones
     initValidations();
-    
-    // Cargar favoritos si existen
-    loadFavorites();
+}
+
+function setDefaultValues() {
+    // Valores por defecto para pruebas
+    document.getElementById('temp-manual').value = '25';
+    document.getElementById('hum-manual').value = '60';
+    document.getElementById('wind-manual').value = '5';
+    document.getElementById('tiempo-exposicion').value = '120';
+    document.getElementById('area').value = '1.0';
 }
 
 // ============================================
@@ -201,12 +171,15 @@ function setupPesticideAutocomplete() {
         const tipo = this.value;
         searchInput.value = '';
         hiddenInput.value = '';
-        detailsDiv.style.display = 'none';
+        if (detailsDiv) detailsDiv.style.display = 'none';
         
         if (tipo) {
             searchInput.placeholder = `Buscar ${tipo.toLowerCase()}...`;
             searchInput.disabled = false;
-            showPesticideSuggestions(tipo, '');
+            
+            // Mostrar todos los plaguicidas del tipo seleccionado
+            const filtered = PESTICIDES_DB.filter(p => p.tipo === tipo);
+            showPesticideSuggestions(filtered);
         } else {
             searchInput.placeholder = 'Seleccione tipo primero';
             searchInput.disabled = true;
@@ -218,23 +191,20 @@ function setupPesticideAutocomplete() {
     // Evento de búsqueda en tiempo real
     searchInput.addEventListener('input', function() {
         const tipo = tipoSelect.value;
-        const query = this.value;
+        const query = this.value.toLowerCase();
         
         if (tipo && query.length >= 2) {
-            showPesticideSuggestions(tipo, query);
+            const filtered = PESTICIDES_DB.filter(p => 
+                p.tipo === tipo && 
+                p.nombre.toLowerCase().includes(query)
+            );
+            showPesticideSuggestions(filtered);
         } else if (tipo) {
-            showPesticideSuggestions(tipo, '');
+            const filtered = PESTICIDES_DB.filter(p => p.tipo === tipo);
+            showPesticideSuggestions(filtered);
         } else {
             suggestionsDiv.innerHTML = '';
             suggestionsDiv.classList.remove('active');
-        }
-    });
-    
-    // Evento de foco
-    searchInput.addEventListener('focus', function() {
-        const tipo = tipoSelect.value;
-        if (tipo && this.value.length === 0) {
-            showPesticideSuggestions(tipo, '');
         }
     });
     
@@ -248,37 +218,11 @@ function setupPesticideAutocomplete() {
     console.log('✅ Autocompletado de plaguicidas configurado');
 }
 
-function showPesticideSuggestions(tipo, query) {
+function showPesticideSuggestions(pesticides) {
     const suggestionsDiv = document.getElementById('plaguicida-suggestions');
-    if (!suggestionsDiv) {
-        console.error('❌ No se encuentra #plaguicida-suggestions');
-        return;
-    }
+    if (!suggestionsDiv) return;
     
-    // Verificar que autoCompleteManager existe
-    if (!window.autoCompleteManager) {
-        suggestionsDiv.innerHTML = `
-            <div class="autocomplete-no-results">
-                <i class="fas fa-exclamation-triangle"></i>
-                <p>Sistema de búsqueda no disponible</p>
-            </div>
-        `;
-        suggestionsDiv.classList.add('active');
-        return;
-    }
-    
-    let filteredPesticides = [];
-    
-    if (query) {
-        // Búsqueda inteligente
-        filteredPesticides = window.autoCompleteManager.searchPesticides(query)
-            .filter(p => p.tipo === tipo);
-    } else {
-        // Todos los del tipo seleccionado
-        filteredPesticides = window.autoCompleteManager.getPesticidesByType(tipo);
-    }
-    
-    if (filteredPesticides.length === 0) {
+    if (pesticides.length === 0) {
         suggestionsDiv.innerHTML = `
             <div class="autocomplete-no-results">
                 <i class="fas fa-search"></i>
@@ -291,7 +235,7 @@ function showPesticideSuggestions(tipo, query) {
     
     let html = '';
     
-    filteredPesticides.forEach(pesticide => {
+    pesticides.forEach(pesticide => {
         const toxicityClass = pesticide.toxicidad.toLowerCase();
         
         html += `
@@ -319,7 +263,7 @@ function showPesticideSuggestions(tipo, query) {
     
     html += `
         <div class="autocomplete-count">
-            ${filteredPesticides.length} resultado${filteredPesticides.length !== 1 ? 's' : ''}
+            ${pesticides.length} resultado${pesticides.length !== 1 ? 's' : ''}
         </div>
     `;
     
@@ -330,13 +274,6 @@ function showPesticideSuggestions(tipo, query) {
     document.querySelectorAll('.autocomplete-suggestion').forEach(suggestion => {
         suggestion.addEventListener('click', function() {
             selectPesticide(this);
-        });
-        
-        suggestion.addEventListener('mouseenter', function() {
-            document.querySelectorAll('.autocomplete-suggestion').forEach(s => {
-                s.classList.remove('active');
-            });
-            this.classList.add('active');
         });
     });
 }
@@ -350,7 +287,7 @@ function selectPesticide(element) {
     const suggestionsDiv = document.getElementById('plaguicida-suggestions');
     
     if (!searchInput || !hiddenInput) {
-        console.error('❌ Error: Elementos de formulario no encontrados');
+        console.error('❌ Error: Elementos no encontrados');
         return;
     }
     
@@ -375,9 +312,6 @@ function selectPesticide(element) {
     if (suggestionsDiv) {
         suggestionsDiv.classList.remove('active');
     }
-    
-    // Validar compatibilidad con cultivo
-    validateCompatibility();
     
     showAlert(`✅ ${pesticideName} seleccionado`, 'success');
 }
@@ -420,6 +354,13 @@ function generatePesticideDetails(pesticide) {
                         <strong>${pesticide.carenciaBase} días</strong>
                     </div>
                 </div>
+                <div class="detail-item">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <div>
+                        <small>LMR</small>
+                        <strong>${pesticide.lmr} ppm</strong>
+                    </div>
+                </div>
             </div>
             ${pesticide.usos && pesticide.usos.length > 0 ? `
                 <div class="details-section">
@@ -429,8 +370,32 @@ function generatePesticideDetails(pesticide) {
                     </div>
                 </div>
             ` : ''}
+            ${pesticide.epiRequerido && pesticide.epiRequerido.length > 0 ? `
+                <div class="details-section">
+                    <h4><i class="fas fa-user-shield"></i> EPI Requerido</h4>
+                    <div class="epi-icons">
+                        ${pesticide.epiRequerido.map(epi => `
+                            <div class="epi-item">
+                                <i class="fas fa-${getEPIIcon(epi)}"></i>
+                                <small>${epi}</small>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            ` : ''}
         </div>
     `;
+}
+
+function getEPIIcon(epi) {
+    const icons = {
+        'guantes': 'hand-paper',
+        'mascarilla': 'head-side-mask',
+        'overol': 'tshirt',
+        'gafas': 'glasses',
+        'botas': 'shoe-prints'
+    };
+    return icons[epi] || 'shield-alt';
 }
 
 // ============================================
@@ -473,20 +438,24 @@ function setupCropAutocomplete() {
     
     // Evento de búsqueda en tiempo real
     searchInput.addEventListener('input', function() {
-        const query = this.value;
+        const query = this.value.toLowerCase();
         
         if (query.length >= 2) {
-            showCropSuggestions(query);
+            const filtered = CROPS_DB.filter(c => 
+                c.nombre.toLowerCase().includes(query) ||
+                c.tipo.toLowerCase().includes(query)
+            );
+            showCropSuggestions(filtered);
         } else {
             suggestionsDiv.innerHTML = '';
             suggestionsDiv.classList.remove('active');
         }
     });
     
-    // Evento de foco
+    // Evento de foco - mostrar todos los cultivos
     searchInput.addEventListener('focus', function() {
         if (this.value.length === 0) {
-            showAllCrops();
+            showCropSuggestions(CROPS_DB);
         }
     });
     
@@ -500,25 +469,11 @@ function setupCropAutocomplete() {
     console.log('✅ Autocompletado de cultivos configurado');
 }
 
-function showCropSuggestions(query) {
+function showCropSuggestions(crops) {
     const suggestionsDiv = document.getElementById('cultivo-suggestions');
     if (!suggestionsDiv) return;
     
-    // Verificar que autoCompleteManager existe
-    if (!window.autoCompleteManager) {
-        suggestionsDiv.innerHTML = `
-            <div class="autocomplete-no-results">
-                <i class="fas fa-exclamation-triangle"></i>
-                <p>Sistema de búsqueda no disponible</p>
-            </div>
-        `;
-        suggestionsDiv.classList.add('active');
-        return;
-    }
-    
-    const filteredCrops = window.autoCompleteManager.searchCrops(query);
-    
-    if (filteredCrops.length === 0) {
+    if (crops.length === 0) {
         suggestionsDiv.innerHTML = `
             <div class="autocomplete-no-results">
                 <i class="fas fa-search"></i>
@@ -531,7 +486,7 @@ function showCropSuggestions(query) {
     
     let html = '';
     
-    filteredCrops.forEach(crop => {
+    crops.forEach(crop => {
         html += `
             <div class="autocomplete-suggestion" 
                  data-id="${crop.id}"
@@ -553,7 +508,7 @@ function showCropSuggestions(query) {
     
     html += `
         <div class="autocomplete-count">
-            ${filteredCrops.length} resultado${filteredCrops.length !== 1 ? 's' : ''}
+            ${crops.length} resultado${crops.length !== 1 ? 's' : ''}
         </div>
     `;
     
@@ -561,55 +516,6 @@ function showCropSuggestions(query) {
     suggestionsDiv.classList.add('active');
     
     // Agregar eventos a las sugerencias
-    document.querySelectorAll('.autocomplete-suggestion').forEach(suggestion => {
-        suggestion.addEventListener('click', function() {
-            selectCrop(this);
-        });
-        
-        suggestion.addEventListener('mouseenter', function() {
-            document.querySelectorAll('.autocomplete-suggestion').forEach(s => {
-                s.classList.remove('active');
-            });
-            this.classList.add('active');
-        });
-    });
-}
-
-function showAllCrops() {
-    const suggestionsDiv = document.getElementById('cultivo-suggestions');
-    if (!suggestionsDiv) return;
-    
-    let html = '';
-    
-    // Mostrar todos los cultivos
-    CROPS_DB.forEach(crop => {
-        html += `
-            <div class="autocomplete-suggestion" 
-                 data-id="${crop.id}"
-                 data-name="${crop.nombre}">
-                <div class="suggestion-icon">
-                    <i class="${crop.icono}"></i>
-                </div>
-                <div class="suggestion-content">
-                    <div class="suggestion-title">${crop.nombre}</div>
-                    <div class="suggestion-subtitle">
-                        <span>${crop.tipo}</span>
-                    </div>
-                </div>
-            </div>
-        `;
-    });
-    
-    html += `
-        <div class="autocomplete-count">
-            ${CROPS_DB.length} cultivos disponibles
-        </div>
-    `;
-    
-    suggestionsDiv.innerHTML = html;
-    suggestionsDiv.classList.add('active');
-    
-    // Agregar eventos
     document.querySelectorAll('.autocomplete-suggestion').forEach(suggestion => {
         suggestion.addEventListener('click', function() {
             selectCrop(this);
@@ -626,7 +532,7 @@ function selectCrop(element) {
     const suggestionsDiv = document.getElementById('cultivo-suggestions');
     
     if (!searchInput || !hiddenInput) {
-        console.error('❌ Error: Elementos de formulario no encontrados');
+        console.error('❌ Error: Elementos no encontrados');
         return;
     }
     
@@ -651,9 +557,6 @@ function selectCrop(element) {
     if (suggestionsDiv) {
         suggestionsDiv.classList.remove('active');
     }
-    
-    // Validar compatibilidad con plaguicida seleccionado
-    validateCompatibility();
     
     showAlert(`✅ ${cropName} seleccionado`, 'success');
 }
@@ -690,58 +593,16 @@ function generateCropDetails(crop) {
                     </div>
                 </div>
             </div>
+            ${crop.restricciones && crop.restricciones.length > 0 ? `
+                <div class="details-section warning">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Restricciones</h4>
+                    <ul>
+                        ${crop.restricciones.map(r => `<li>${r}</li>`).join('')}
+                    </ul>
+                </div>
+            ` : ''}
         </div>
     `;
-}
-
-// ============================================
-// VALIDACIÓN DE COMPATIBILIDAD
-// ============================================
-
-function validateCompatibility() {
-    const pesticideId = document.getElementById('plaguicida-id').value;
-    const cropId = document.getElementById('cultivo-id').value;
-    const statusDiv = document.getElementById('compatibility-status');
-    
-    if (!statusDiv) return true;
-    
-    if (!pesticideId || !cropId) {
-        statusDiv.style.display = 'none';
-        return true;
-    }
-    
-    const pesticide = PESTICIDES_DB.find(p => p.id === parseInt(pesticideId));
-    const crop = CROPS_DB.find(c => c.id === parseInt(cropId));
-    
-    if (!pesticide || !crop) {
-        statusDiv.style.display = 'none';
-        return true;
-    }
-    
-    // Verificar si el cultivo está en los permitidos
-    const isCompatible = pesticide.cultivosPermitidos.includes(crop.id);
-    
-    statusDiv.style.display = 'block';
-    
-    if (isCompatible) {
-        statusDiv.innerHTML = `
-            <div class="compatibility-valid">
-                <i class="fas fa-check-circle"></i>
-                <span>Compatible: ${pesticide.nombre} puede usarse en ${crop.nombre}</span>
-            </div>
-        `;
-        statusDiv.className = 'compatibility-status valid';
-        return true;
-    } else {
-        statusDiv.innerHTML = `
-            <div class="compatibility-invalid">
-                <i class="fas fa-exclamation-triangle"></i>
-                <span>Incompatible: ${pesticide.nombre} NO está recomendado para ${crop.nombre}</span>
-            </div>
-        `;
-        statusDiv.className = 'compatibility-status invalid';
-        return false;
-    }
 }
 
 // ============================================
@@ -750,21 +611,17 @@ function validateCompatibility() {
 
 function calculateDosis() {
     try {
+        console.log('🧮 Calculando dosis...');
+        
         // Obtener datos
         const pesticideId = document.getElementById('plaguicida-id').value;
         const cropId = document.getElementById('cultivo-id').value;
         const area = parseFloat(document.getElementById('area').value);
         
         // Validaciones
-        if (!pesticideId || !cropId || !area || area <= 0) {
-            throw new Error('Complete todos los campos requeridos');
-        }
-        
-        // Validar compatibilidad
-        if (!validateCompatibility()) {
-            const proceed = confirm('⚠️ Producto no recomendado para este cultivo. ¿Desea continuar?');
-            if (!proceed) return;
-        }
+        if (!pesticideId) throw new Error('Seleccione un plaguicida');
+        if (!cropId) throw new Error('Seleccione un cultivo');
+        if (!area || area <= 0) throw new Error('Ingrese un área válida (mayor que 0)');
         
         // Obtener datos completos
         const pesticide = PESTICIDES_DB.find(p => p.id === parseInt(pesticideId));
@@ -823,6 +680,7 @@ function calculateDosis() {
         showAlert('✅ Cálculo completado correctamente', 'success');
         
     } catch (error) {
+        console.error('❌ Error en cálculo:', error);
         showAlert(`❌ ${error.message}`, 'danger');
     }
 }
@@ -931,29 +789,27 @@ function displayResults(dosisAjustada, cantidadTotal, carenciaFinal, nextApplica
 // ============================================
 
 function setupEventListeners() {
+    console.log('🔗 Configurando eventos...');
+    
     // Botón calcular
     const calcularBtn = document.getElementById('calcular-btn');
     if (calcularBtn) {
         calcularBtn.addEventListener('click', calculateDosis);
+        console.log('✅ Evento calcular configurado');
     }
     
-    // Botón registrar (usando función local temporal)
+    // Botón registrar
     const registrarBtn = document.getElementById('registrar-btn');
     if (registrarBtn) {
-        registrarBtn.addEventListener('click', function() {
-            // Función temporal hasta que storage.js cargue
-            if (window.registerApplication) {
-                window.registerApplication();
-            } else {
-                showAlert('Sistema de almacenamiento no disponible temporalmente', 'warning');
-            }
-        });
+        registrarBtn.addEventListener('click', registerApplication);
+        console.log('✅ Evento registrar configurado');
     }
     
     // Botón limpiar
     const limpiarBtn = document.getElementById('limpiar-btn');
     if (limpiarBtn) {
         limpiarBtn.addEventListener('click', clearForm);
+        console.log('✅ Evento limpiar configurado');
     }
     
     // Botón historial
@@ -962,21 +818,21 @@ function setupEventListeners() {
         historialBtn.addEventListener('click', function() {
             showAlert('Funcionalidad de historial en desarrollo', 'info');
         });
+        console.log('✅ Evento historial configurado');
     }
     
     // Botón NFC
     const nfcBtn = document.getElementById('nfc-simulate');
     if (nfcBtn) {
         nfcBtn.addEventListener('click', simulateNFCScan);
+        console.log('✅ Evento NFC configurado');
     }
     
     // Validación de EPI en tiempo real
     document.querySelectorAll('.epi-checkbox input').forEach(cb => {
         cb.addEventListener('change', validateEPI);
     });
-}
-
-function setupRealTimeValidation() {
+    
     // Validar clima en tiempo real
     ['temp-manual', 'hum-manual', 'wind-manual'].forEach(id => {
         const input = document.getElementById(id);
@@ -984,6 +840,8 @@ function setupRealTimeValidation() {
             input.addEventListener('input', updateWeatherRecommendation);
         }
     });
+    
+    console.log('✅ Todos los eventos configurados');
 }
 
 function updateWeatherRecommendation() {
@@ -1038,6 +896,8 @@ function validateEPI() {
 // ============================================
 
 function clearForm() {
+    console.log('🧹 Limpiando formulario...');
+    
     // Limpiar autocompletado de plaguicida
     const tipoSelect = document.getElementById('tipo-plaguicida');
     if (tipoSelect) tipoSelect.value = '';
@@ -1109,6 +969,8 @@ function clearForm() {
 }
 
 function initTooltips() {
+    console.log('💡 Configurando tooltips...');
+    
     // Tooltips simples para íconos
     const tooltipElements = document.querySelectorAll('[title]');
     tooltipElements.forEach(element => {
@@ -1148,9 +1010,13 @@ function initTooltips() {
             }
         });
     });
+    
+    console.log('✅ Tooltips configurados');
 }
 
 function initValidations() {
+    console.log('✓ Configurando validaciones...');
+    
     // Validación de campos numéricos
     const numericInputs = document.querySelectorAll('input[type="number"]');
     numericInputs.forEach(input => {
@@ -1162,25 +1028,8 @@ function initValidations() {
             }
         });
     });
-}
-
-function updateStatistics() {
-    try {
-        // Actualizar contadores en el footer
-        const totalRegistros = document.getElementById('total-registros');
-        const aplicacionesHoy = document.getElementById('aplicaciones-hoy');
-        
-        if (totalRegistros) totalRegistros.textContent = '0';
-        if (aplicacionesHoy) aplicacionesHoy.textContent = '0';
-        
-    } catch (error) {
-        console.error('Error al actualizar estadísticas:', error);
-    }
-}
-
-function loadFavorites() {
-    // Función temporal
-    console.log('Favoritos: Funcionalidad en desarrollo');
+    
+    console.log('✅ Validaciones configuradas');
 }
 
 // ============================================
@@ -1196,6 +1045,8 @@ function simulateNFCScan() {
     const loteArea = document.getElementById('lote-area');
     
     if (!nfcBtn || !nfcStatus) return;
+    
+    console.log('📱 Simulando escaneo NFC...');
     
     // Simular escaneo
     nfcBtn.disabled = true;
@@ -1240,30 +1091,32 @@ function simulateNFCScan() {
         nfcBtn.innerHTML = '<i class="fas fa-qrcode"></i> Simular Escaneo NFC';
         
         showAlert(`Lote escaneado correctamente: ${cultivoAleatorio}`, 'success');
+        console.log('✅ NFC simulado correctamente');
         
     }, 1500);
 }
 
 // ============================================
-// INICIALIZACIÓN GLOBAL
+// REGISTRO DE APLICACIÓN
 // ============================================
 
-// Función temporal para registro
-window.registerApplication = function() {
+function registerApplication() {
     try {
         if (!window.currentCalculation) {
             throw new Error('Primero realice un cálculo');
         }
         
-        // Simular guardado
+        console.log('💾 Registrando aplicación...');
+        
+        // Crear registro
         const registro = {
             ...window.currentCalculation,
-            fechaAplicacion: new Date().toISOString(),
+            id: Date.now().toString(36) + Math.random().toString(36).substr(2),
+            fechaCreacion: new Date().toISOString(),
             observaciones: document.getElementById('observaciones').value || ''
         };
         
-        // Mostrar en consola
-        console.log('📋 Registro simulado:', registro);
+        console.log('📋 Registro creado:', registro);
         
         // Mostrar modal de éxito
         const modal = document.getElementById('successModal');
@@ -1288,8 +1141,9 @@ window.registerApplication = function() {
         showAlert('✅ Aplicación registrada exitosamente', 'success');
         
     } catch (error) {
+        console.error('❌ Error al registrar:', error);
         showAlert(`❌ ${error.message}`, 'danger');
     }
-};
+}
 
-console.log('✨ AgroTracebility v2.0 con autocompletado cargado');
+console.log('✨ AgroTracebility cargado - Listo para usar');

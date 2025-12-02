@@ -706,3 +706,278 @@
 .autocomplete-suggestions {
     animation: fadeIn 0.2s ease;
 }
+
+/* ============================================
+   ESTILOS MEJORADOS PARA DETALLES COMPACTOS
+   ============================================ */
+
+/* Contenedor principal más compacto */
+.pesticide-details,
+.crop-details {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #2E7D32;
+    border-top: 1px solid #dee2e6;
+    animation: slideDown 0.3s ease;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* Cabecera más compacta */
+.details-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.details-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    color: #2E7D32;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    flex-shrink: 0;
+}
+
+.details-title h3 {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #343A40;
+    line-height: 1.2;
+    font-weight: 600;
+}
+
+.details-subtitle {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    font-size: 0.75rem;
+    color: #6C757D;
+    margin-top: 0.2rem;
+    flex-wrap: wrap;
+}
+
+/* Badge de toxicidad más pequeño */
+.toxicity-badge {
+    padding: 0.15rem 0.4rem;
+    border-radius: 10px;
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Cuerpo más compacto */
+.details-body {
+    font-size: 0.8rem;
+}
+
+/* Fila de detalles más compacta */
+.details-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #E9ECEF;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.detail-item i {
+    color: #2E7D32;
+    font-size: 0.9rem;
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.detail-item small {
+    display: block;
+    color: #6C757D;
+    font-size: 0.7rem;
+    margin-bottom: 0.05rem;
+}
+
+.detail-item strong {
+    display: block;
+    font-size: 0.85rem;
+    color: #343A40;
+    font-weight: 600;
+}
+
+/* Secciones más compactas */
+.details-section {
+    margin-top: 0.75rem;
+}
+
+.details-section h4 {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.4rem;
+    font-size: 0.85rem;
+    color: #343A40;
+    font-weight: 600;
+}
+
+.details-section h4 i {
+    font-size: 0.9rem;
+}
+
+/* Tags más pequeños */
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.25rem;
+}
+
+.tag {
+    padding: 0.2rem 0.5rem;
+    background: white;
+    border: 1px solid #E9ECEF;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    color: #495057;
+}
+
+/* Sección de EPI más compacta */
+.epi-icons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.4rem;
+}
+
+.epi-item {
+    text-align: center;
+    min-width: 50px;
+}
+
+.epi-item i {
+    display: block;
+    font-size: 1.2rem;
+    color: #2E7D32;
+    margin-bottom: 0.2rem;
+}
+
+.epi-item small {
+    font-size: 0.7rem;
+    color: #6C757D;
+}
+
+/* Sección de advertencia compacta */
+.details-section.warning {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 6px;
+    padding: 0.6rem;
+    margin-top: 0.75rem;
+}
+
+.details-section.warning h4 {
+    color: #856404;
+    font-size: 0.8rem;
+}
+
+.details-section.warning ul {
+    margin: 0.4rem 0 0 1rem;
+    font-size: 0.75rem;
+    padding-left: 0.2rem;
+}
+
+.details-section.warning li {
+    margin-bottom: 0.2rem;
+    line-height: 1.3;
+}
+
+/* Animación de deslizamiento hacia abajo */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 200px;
+    }
+}
+
+/* Botón para expandir/contraer */
+.details-toggle {
+    display: none; /* Oculto por defecto, se mostrará si hay mucho contenido */
+}
+
+/* Para pantallas pequeñas, hacer los detalles más compactos aún */
+@media (max-width: 768px) {
+    .pesticide-details,
+    .crop-details {
+        max-height: 180px;
+        padding: 0.6rem;
+    }
+    
+    .details-row {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .details-header {
+        gap: 0.5rem;
+    }
+    
+    .details-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+    
+    .details-title h3 {
+        font-size: 0.9rem;
+    }
+}
+
+/* Estilo para cuando hay mucho contenido - mostrar scroll */
+.pesticide-details.scrollable,
+.crop-details.scrollable {
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+/* Personalizar scrollbar */
+.pesticide-details::-webkit-scrollbar,
+.crop-details::-webkit-scrollbar {
+    width: 6px;
+}
+
+.pesticide-details::-webkit-scrollbar-track,
+.crop-details::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.pesticide-details::-webkit-scrollbar-thumb,
+.crop-details::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.pesticide-details::-webkit-scrollbar-thumb:hover,
+.crop-details::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
