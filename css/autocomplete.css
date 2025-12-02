@@ -1,0 +1,317 @@
+/* ============================================
+   ESTILOS PARA AUTOCOMPLETADO
+   ============================================ */
+
+/* Contenedor de autocompletado */
+.autocomplete-container {
+    position: relative;
+    width: 100%;
+}
+
+/* Input con autocompletado */
+.autocomplete-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid var(--light-gray);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.autocomplete-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+}
+
+/* Lista de sugerencias */
+.autocomplete-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 300px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid var(--light-gray);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-md);
+    z-index: 1000;
+    display: none;
+}
+
+.autocomplete-suggestions.active {
+    display: block;
+}
+
+/* Elemento individual de sugerencia */
+.autocomplete-suggestion {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.autocomplete-suggestion:last-child {
+    border-bottom: none;
+}
+
+.autocomplete-suggestion:hover {
+    background: var(--light);
+}
+
+.autocomplete-suggestion.active {
+    background: var(--primary-light);
+    color: white;
+}
+
+/* Icono en sugerencia */
+.suggestion-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    font-size: 0.9rem;
+}
+
+.autocomplete-suggestion.active .suggestion-icon {
+    color: white;
+}
+
+/* Información de la sugerencia */
+.suggestion-content {
+    flex: 1;
+}
+
+.suggestion-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+}
+
+.suggestion-subtitle {
+    font-size: 0.8rem;
+    color: var(--dark-gray);
+    display: flex;
+    gap: 0.5rem;
+}
+
+.autocomplete-suggestion.active .suggestion-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Badges de información */
+.info-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-toxicity {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.badge-toxicity.alta { background: #ffcdd2; }
+.badge-toxicity.media { background: #fff3e0; color: #ef6c00; }
+.badge-toxicity.baja { background: #e8f5e9; color: #2e7d32; }
+
+.badge-type {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.badge-dosis {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+/* Contador de resultados */
+.autocomplete-count {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    color: var(--dark-gray);
+    background: var(--light-gray);
+    border-top: 1px solid var(--medium-gray);
+    text-align: center;
+}
+
+/* Mensaje sin resultados */
+.autocomplete-no-results {
+    padding: 1rem;
+    text-align: center;
+    color: var(--dark-gray);
+    font-style: italic;
+}
+
+/* ============================================
+   ESTILOS PARA SELECTS MEJORADOS
+   ============================================ */
+
+.select-with-search {
+    position: relative;
+}
+
+.select-search-input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--light-gray);
+    border-radius: var(--radius-sm);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.select-options {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--light-gray);
+    border-radius: var(--radius-sm);
+    background: white;
+}
+
+.select-option {
+    padding: 0.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.select-option:last-child {
+    border-bottom: none;
+}
+
+.select-option:hover {
+    background: var(--light);
+}
+
+.select-option.selected {
+    background: var(--primary-light);
+    color: white;
+}
+
+.select-option-icon {
+    width: 20px;
+    text-align: center;
+    color: var(--primary);
+}
+
+.select-option.selected .select-option-icon {
+    color: white;
+}
+
+/* ============================================
+   ESTILOS PARA RECOMENDACIONES
+   ============================================ */
+
+.recommendations-container {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+    border-radius: var(--radius-sm);
+    border-left: 4px solid var(--success);
+}
+
+.recommendations-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--primary-dark);
+    font-weight: 600;
+}
+
+.recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.75rem;
+}
+
+.recommendation-card {
+    background: white;
+    padding: 0.75rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--accent-light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.recommendation-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+    border-color: var(--primary);
+}
+
+.recommendation-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.recommendation-icon {
+    color: var(--primary);
+    font-size: 1.2rem;
+}
+
+.recommendation-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--dark);
+}
+
+.recommendation-details {
+    font-size: 0.8rem;
+    color: var(--dark-gray);
+    line-height: 1.4;
+}
+
+/* ============================================
+   RESPONSIVE PARA AUTOCOMPLETADO
+   ============================================ */
+
+@media (max-width: 768px) {
+    .autocomplete-suggestions {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        max-height: 50vh;
+        border-radius: var(--radius-md) var(--radius-md) 0 0;
+    }
+    
+    .recommendations-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .autocomplete-suggestion {
+        padding: 1rem;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.autocomplete-suggestions {
+    animation: fadeIn 0.2s ease;
+}

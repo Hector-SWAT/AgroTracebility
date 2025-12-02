@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroTracebility | Gestión de Plaguicidas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-leaf logo-icon"></i>
+                    <h1>Agro<span>Tracebility</span></h1>
+                    <span class="tagline">Gestión Inteligente de Plaguicidas</span>
+                </div>
+                <div class="header-info">
+                    <div class="date-time">
+                        <i class="far fa-calendar-alt"></i>
+                        <span id="current-date"></span>
+                    </div>
+                    <div class="user-badge">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Agricultor</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="container main-container">
+        <!-- NFC Section -->
+        <section class="card nfc-section">
+            <div class="card-header">
+                <i class="fas fa-tag card-icon"></i>
+                <h2>Identificación del Lote</h2>
+            </div>
+            <div class="card-body">
+                <div class="nfc-controls">
+                    <button id="nfc-simulate" class="btn btn-primary">
+                        <i class="fas fa-qrcode"></i> Simular Escaneo NFC
+                    </button>
+                    <div class="nfc-status">
+                        <span class="status-badge" id="nfc-status">No escaneado</span>
+                    </div>
+                </div>
+                <div class="nfc-info" id="nfc-info" style="display: none;">
+                    <div class="info-row">
+                        <span class="info-label">ID Lote:</span>
+                        <span id="lote-id" class="info-value">LT-001</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Cultivo:</span>
+                        <span id="lote-cultivo" class="info-value">Maíz</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Área:</span>
+                        <span id="lote-area" class="info-value">2.5 ha</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Form Section -->
+        <section class="card form-section">
+            <div class="card-header">
+                <i class="fas fa-clipboard-list card-icon"></i>
+                <h2>Registro de Aplicación</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-grid">
+                    <!-- Tipo de Plaguicida -->
+                    <div class="form-group">
+                        <label for="tipo-plaguicida">
+                            <i class="fas fa-flask"></i> Tipo de Plaguicida
+                        </label>
+                        <select id="tipo-plaguicida" class="form-select">
+                            <option value="">Seleccione tipo</option>
+                            <option value="INSECTICIDA">Insecticida</option>
+                            <option value="FUNGICIDA">Fungicida</option>
+                            <option value="HERBICIDA">Herbicida</option>
+                            <option value="ACARICIDA">Acaricida</option>
+                            <option value="NEMATICIDA">Nematicida</option>
+                        </select>
+                    </div>
+
+                    <!-- Plaguicida Específico -->
+                    <div class="form-group">
+                        <label for="plaguicida">
+                            <i class="fas fa-spray-can"></i> Plaguicida
+                        </label>
+                        <select id="plaguicida" class="form-select" disabled>
+                            <option value="">Seleccione tipo primero</option>
+                        </select>
+                    </div>
+
+                    <!-- Cultivo -->
+                    <div class="form-group">
+                        <label for="cultivo">
+                            <i class="fas fa-seedling"></i> Cultivo
+                        </label>
+                        <select id="cultivo" class="form-select">
+                            <option value="">Seleccione cultivo</option>
+                            <!-- Se carga dinámicamente -->
+                        </select>
+                    </div>
+
+                    <!-- Área -->
+                    <div class="form-group">
+                        <label for="area">
+                            <i class="fas fa-ruler-combined"></i> Área (ha)
+                        </label>
+                        <input type="number" id="area" class="form-input" 
+                               placeholder="Ej: 2.5" step="0.1" min="0.1">
+                    </div>
+
+                    <!-- Datos Relevantes -->
+                    <div class="form-group full-width">
+                        <label for="observaciones">
+                            <i class="fas fa-sticky-note"></i> Observaciones
+                        </label>
+                        <textarea id="observaciones" class="form-textarea" 
+                                  placeholder="Condiciones climáticas, observaciones..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sensors Simulation -->
+        <section class="card sensors-section">
+            <div class="card-header">
+                <i class="fas fa-thermometer-half card-icon"></i>
+                <h2>Condiciones Ambientales</h2>
+            </div>
+            <div class="card-body">
+                <div class="maintenance-alert">
+                    <i class="fas fa-tools"></i>
+                    <div class="alert-content">
+                        <h3>Sensores en Mantenimiento</h3>
+                        <p>Ingrese manualmente las condiciones actuales</p>
+                    </div>
+                </div>
+                
+                <div class="manual-sensors">
+                    <div class="sensor-input">
+                        <label for="temp-manual">
+                            <i class="fas fa-temperature-high"></i> Temperatura (°C)
+                        </label>
+                        <input type="number" id="temp-manual" class="form-input" 
+                               placeholder="25" step="0.1" min="-10" max="50">
+                    </div>
+                    <div class="sensor-input">
+                        <label for="hum-manual">
+                            <i class="fas fa-tint"></i> Humedad (%)
+                        </label>
+                        <input type="number" id="hum-manual" class="form-input" 
+                               placeholder="60" step="1" min="0" max="100">
+                    </div>
+                    <div class="sensor-input">
+                        <label for="wind-manual">
+                            <i class="fas fa-wind"></i> Viento (km/h)
+                        </label>
+                        <input type="number" id="wind-manual" class="form-input" 
+                               placeholder="5" step="0.1" min="0" max="100">
+                    </div>
+                </div>
+                
+                <div class="weather-recommendation">
+                    <h4><i class="fas fa-lightbulb"></i> Recomendación:</h4>
+                    <p id="weather-advice">Complete los datos para obtener recomendaciones</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- EPI Section -->
+        <section class="card epi-section">
+            <div class="card-header">
+                <i class="fas fa-user-shield card-icon"></i>
+                <h2>Equipo de Protección (EPI)</h2>
+            </div>
+            <div class="card-body">
+                <div class="epi-grid">
+                    <label class="epi-checkbox">
+                        <input type="checkbox" id="epi-guantes">
+                        <span class="checkbox-icon"><i class="fas fa-hand-paper"></i></span>
+                        <span class="checkbox-label">Guantes</span>
+                    </label>
+                    
+                    <label class="epi-checkbox">
+                        <input type="checkbox" id="epi-mascarilla">
+                        <span class="checkbox-icon"><i class="fas fa-head-side-mask"></i></span>
+                        <span class="checkbox-label">Mascarilla</span>
+                    </label>
+                    
+                    <label class="epi-checkbox">
+                        <input type="checkbox" id="epi-overol">
+                        <span class="checkbox-icon"><i class="fas fa-tshirt"></i></span>
+                        <span class="checkbox-label">Overol</span>
+                    </label>
+                    
+                    <label class="epi-checkbox">
+                        <input type="checkbox" id="epi-gafas">
+                        <span class="checkbox-icon"><i class="fas fa-glasses"></i></span>
+                        <span class="checkbox-label">Gafas</span>
+                    </label>
+                    
+                    <label class="epi-checkbox">
+                        <input type="checkbox" id="epi-botas">
+                        <span class="checkbox-icon"><i class="fas fa-shoe-prints"></i></span>
+                        <span class="checkbox-label">Botas</span>
+                    </label>
+                </div>
+                
+                <div class="exposure-time">
+                    <label for="tiempo-exposicion">
+                        <i class="far fa-clock"></i> Tiempo de Exposición (minutos)
+                    </label>
+                    <input type="number" id="tiempo-exposicion" class="form-input" 
+                           placeholder="120" min="0">
+                </div>
+            </div>
+        </section>
+
+        <!-- Calculation Results -->
+        <section class="card results-section">
+            <div class="card-header">
+                <i class="fas fa-calculator card-icon"></i>
+                <h2>Cálculo de Dosis</h2>
+            </div>
+            <div class="card-body">
+                <button id="calcular-btn" class="btn btn-success btn-lg">
+                    <i class="fas fa-calculator"></i> Calcular Dosis
+                </button>
+                
+                <div class="results-container" id="results-container" style="display: none;">
+                    <div class="result-row">
+                        <div class="result-card">
+                            <div class="result-icon">
+                                <i class="fas fa-prescription-bottle"></i>
+                            </div>
+                            <div class="result-content">
+                                <h3>Dosis Recomendada</h3>
+                                <p id="dosis-result" class="result-value">--</p>
+                                <p class="result-subtitle">por hectárea</p>
+                            </div>
+                        </div>
+                        
+                        <div class="result-card">
+                            <div class="result-icon">
+                                <i class="fas fa-flask"></i>
+                            </div>
+                            <div class="result-content">
+                                <h3>Cantidad Total</h3>
+                                <p id="total-result" class="result-value">--</p>
+                                <p class="result-subtitle">para el área total</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="result-row">
+                        <div class="result-card">
+                            <div class="result-icon">
+                                <i class="far fa-calendar-times"></i>
+                            </div>
+                            <div class="result-content">
+                                <h3>Período de Carencia</h3>
+                                <p id="carencia-result" class="result-value">--</p>
+                                <p class="result-subtitle">días de espera</p>
+                            </div>
+                        </div>
+                        
+                        <div class="result-card">
+                            <div class="result-icon">
+                                <i class="far fa-calendar-check"></i>
+                            </div>
+                            <div class="result-content">
+                                <h3>Próxima Aplicación</h3>
+                                <p id="proxima-aplicacion" class="result-value">--</p>
+                                <p class="result-subtitle">fecha estimada</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="validation-status" id="validation-status">
+                        <div class="status-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="status-content">
+                            <h4>Estado de Validación</h4>
+                            <p id="status-message">Complete el cálculo para verificar</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Action Buttons -->
+        <section class="action-buttons">
+            <button id="registrar-btn" class="btn btn-primary btn-action" disabled>
+                <i class="far fa-save"></i> Guardar Aplicación
+            </button>
+            <button id="limpiar-btn" class="btn btn-secondary btn-action">
+                <i class="fas fa-broom"></i> Limpiar Todo
+            </button>
+            <button id="historial-btn" class="btn btn-info btn-action">
+                <i class="fas fa-history"></i> Ver Historial
+            </button>
+        </section>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <i class="fas fa-leaf"></i>
+                    <p>AgroTracebility v1.0 - Sistema de gestión agrícola</p>
+                </div>
+                <div class="footer-stats">
+                    <span class="stat">
+                        <i class="fas fa-database"></i>
+                        <span id="total-registros">0</span> registros
+                    </span>
+                    <span class="stat">
+                        <i class="fas fa-check-circle"></i>
+                        <span id="aplicaciones-hoy">0</span> hoy
+                    </span>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Modals -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-icon success">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3>¡Registro Exitoso!</h3>
+            <p id="modal-message"></p>
+            <button class="btn btn-primary" onclick="closeModal()">Aceptar</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
