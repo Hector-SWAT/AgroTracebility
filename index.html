@@ -343,9 +343,30 @@
         </div>
     </div>
 
-    <!-- Scripts -->
+       <!-- Scripts - ORDEN CORREGIDO -->
     <script src="js/data.js"></script>
     <script src="js/app.js"></script>
+    
+    <script>
+        // Función para cerrar modal
+        function closeModal() {
+            document.getElementById('successModal').style.display = 'none';
+        }
+        
+        // Inicialización adicional
+        document.addEventListener('DOMContentLoaded', function() {
+            // Asegurar que la fecha se actualice
+            if (typeof updateDateTime === 'function') {
+                updateDateTime();
+            }
+            
+            // Configurar tooltips
+            const tooltips = document.querySelectorAll('[title]');
+            tooltips.forEach(el => {
+                el.setAttribute('data-tooltip', el.title);
+                el.removeAttribute('title');
+            });
+        });
+    </script>
 </body>
-
 </html>
