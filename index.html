@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AgroTracebility | Gestión de Plaguicidas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
     <!-- Header -->
     <header class="app-header">
@@ -74,7 +78,7 @@
             </div>
             <div class="card-body">
                 <div class="form-grid">
-                    <!-- Tipo de Plaguicida -->
+                    <!-- Plaguicida Específico -->
                     <div class="form-group">
                         <label for="tipo-plaguicida">
                             <i class="fas fa-flask"></i> Tipo de Plaguicida
@@ -89,25 +93,21 @@
                         </select>
                     </div>
 
-                    <!-- Plaguicida Específico -->
                     <div class="form-group">
-                        <label for="plaguicida">
+                        <label>
                             <i class="fas fa-spray-can"></i> Plaguicida
                         </label>
-                        <select id="plaguicida" class="form-select" disabled>
-                            <option value="">Seleccione tipo primero</option>
-                        </select>
+                        <!-- Contenedor para autocompletado -->
+                        <div id="plaguicida-container"></div>
                     </div>
 
                     <!-- Cultivo -->
                     <div class="form-group">
-                        <label for="cultivo">
+                        <label>
                             <i class="fas fa-seedling"></i> Cultivo
                         </label>
-                        <select id="cultivo" class="form-select">
-                            <option value="">Seleccione cultivo</option>
-                            <!-- Se carga dinámicamente -->
-                        </select>
+                        <!-- Contenedor para autocompletado -->
+                        <div id="cultivo-container"></div>
                     </div>
 
                     <!-- Área -->
@@ -115,8 +115,7 @@
                         <label for="area">
                             <i class="fas fa-ruler-combined"></i> Área (ha)
                         </label>
-                        <input type="number" id="area" class="form-input" 
-                               placeholder="Ej: 2.5" step="0.1" min="0.1">
+                        <input type="number" id="area" class="form-input" placeholder="Ej: 2.5" step="0.1" min="0.1">
                     </div>
 
                     <!-- Datos Relevantes -->
@@ -124,8 +123,8 @@
                         <label for="observaciones">
                             <i class="fas fa-sticky-note"></i> Observaciones
                         </label>
-                        <textarea id="observaciones" class="form-textarea" 
-                                  placeholder="Condiciones climáticas, observaciones..."></textarea>
+                        <textarea id="observaciones" class="form-textarea"
+                            placeholder="Condiciones climáticas, observaciones..."></textarea>
                     </div>
                 </div>
             </div>
@@ -145,31 +144,31 @@
                         <p>Ingrese manualmente las condiciones actuales</p>
                     </div>
                 </div>
-                
+
                 <div class="manual-sensors">
                     <div class="sensor-input">
                         <label for="temp-manual">
                             <i class="fas fa-temperature-high"></i> Temperatura (°C)
                         </label>
-                        <input type="number" id="temp-manual" class="form-input" 
-                               placeholder="25" step="0.1" min="-10" max="50">
+                        <input type="number" id="temp-manual" class="form-input" placeholder="25" step="0.1" min="-10"
+                            max="50">
                     </div>
                     <div class="sensor-input">
                         <label for="hum-manual">
                             <i class="fas fa-tint"></i> Humedad (%)
                         </label>
-                        <input type="number" id="hum-manual" class="form-input" 
-                               placeholder="60" step="1" min="0" max="100">
+                        <input type="number" id="hum-manual" class="form-input" placeholder="60" step="1" min="0"
+                            max="100">
                     </div>
                     <div class="sensor-input">
                         <label for="wind-manual">
                             <i class="fas fa-wind"></i> Viento (km/h)
                         </label>
-                        <input type="number" id="wind-manual" class="form-input" 
-                               placeholder="5" step="0.1" min="0" max="100">
+                        <input type="number" id="wind-manual" class="form-input" placeholder="5" step="0.1" min="0"
+                            max="100">
                     </div>
                 </div>
-                
+
                 <div class="weather-recommendation">
                     <h4><i class="fas fa-lightbulb"></i> Recomendación:</h4>
                     <p id="weather-advice">Complete los datos para obtener recomendaciones</p>
@@ -190,38 +189,37 @@
                         <span class="checkbox-icon"><i class="fas fa-hand-paper"></i></span>
                         <span class="checkbox-label">Guantes</span>
                     </label>
-                    
+
                     <label class="epi-checkbox">
                         <input type="checkbox" id="epi-mascarilla">
                         <span class="checkbox-icon"><i class="fas fa-head-side-mask"></i></span>
                         <span class="checkbox-label">Mascarilla</span>
                     </label>
-                    
+
                     <label class="epi-checkbox">
                         <input type="checkbox" id="epi-overol">
                         <span class="checkbox-icon"><i class="fas fa-tshirt"></i></span>
                         <span class="checkbox-label">Overol</span>
                     </label>
-                    
+
                     <label class="epi-checkbox">
                         <input type="checkbox" id="epi-gafas">
                         <span class="checkbox-icon"><i class="fas fa-glasses"></i></span>
                         <span class="checkbox-label">Gafas</span>
                     </label>
-                    
+
                     <label class="epi-checkbox">
                         <input type="checkbox" id="epi-botas">
                         <span class="checkbox-icon"><i class="fas fa-shoe-prints"></i></span>
                         <span class="checkbox-label">Botas</span>
                     </label>
                 </div>
-                
+
                 <div class="exposure-time">
                     <label for="tiempo-exposicion">
                         <i class="far fa-clock"></i> Tiempo de Exposición (minutos)
                     </label>
-                    <input type="number" id="tiempo-exposicion" class="form-input" 
-                           placeholder="120" min="0">
+                    <input type="number" id="tiempo-exposicion" class="form-input" placeholder="120" min="0">
                 </div>
             </div>
         </section>
@@ -236,7 +234,7 @@
                 <button id="calcular-btn" class="btn btn-success btn-lg">
                     <i class="fas fa-calculator"></i> Calcular Dosis
                 </button>
-                
+
                 <div class="results-container" id="results-container" style="display: none;">
                     <div class="result-row">
                         <div class="result-card">
@@ -249,7 +247,7 @@
                                 <p class="result-subtitle">por hectárea</p>
                             </div>
                         </div>
-                        
+
                         <div class="result-card">
                             <div class="result-icon">
                                 <i class="fas fa-flask"></i>
@@ -261,7 +259,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="result-row">
                         <div class="result-card">
                             <div class="result-icon">
@@ -273,7 +271,7 @@
                                 <p class="result-subtitle">días de espera</p>
                             </div>
                         </div>
-                        
+
                         <div class="result-card">
                             <div class="result-icon">
                                 <i class="far fa-calendar-check"></i>
@@ -285,7 +283,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="validation-status" id="validation-status">
                         <div class="status-icon">
                             <i class="fas fa-info-circle"></i>
@@ -349,4 +347,5 @@
     <script src="js/data.js"></script>
     <script src="js/app.js"></script>
 </body>
+
 </html>
